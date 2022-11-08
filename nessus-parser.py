@@ -74,6 +74,8 @@ def main():
       temp_obj = Template(template_string)
       # Plugin ID,CVE,CVSS v2.0 Base Score,Risk,Host,Protocol,Port,Name,Synopsis,Description,Solution,See Also,Plugin Output,STIG Severity,CVSS v3.0 Base Score
       # CVSS v2.0 Temporal Score,CVSS v3.0 Temporal Score,Risk Factor,BID,XREF,MSKB,Plugin Publication Date,Plugin Modification Date,Metasploit,Core Impact,CANVAS
+      if len(dedupe_dict[issue]['CVE']) == 0:
+        dedupe_dict[issue]['CVE'] = "N/A"
       issue_file = open(parsed.output + "/" + issue + ".tex", "w")
       issue_file.write(
         temp_obj.substitute(
