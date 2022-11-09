@@ -54,7 +54,8 @@ def main():
         dedupe_dict[row['Plugin ID']] = dict(row)
         # Hosts list
         dedupe_dict[row['Plugin ID']]['Hosts'] = []
-      dedupe_dict[row['Plugin ID']]['Hosts'].append(row['Host'])
+      if row['Host'] not in dedupe_dict[row['Plugin ID']]['Hosts']:
+        dedupe_dict[row['Plugin ID']]['Hosts'].append(row['Host'])
 
     # Check / create output directory
     if os.path.exists(parsed.output):
@@ -89,7 +90,7 @@ def main():
           # There must be a better way..
           cve="        \item \\href{{https://cve.mitre.org/cgi-bin/cvename.cgi?name={0}}}{{{0}}}\n".format("".join(cve for cve in dedupe_dict[issue]['CVE'].split())),
           host=''.join('        \item %s\n' % host for host in dedupe_dict[issue]['Hosts']),
-          see_also=''.join('        \\url{%s}\n\n' % see_also for see_also in dedupe_dict[issue]['See Also'].split()),
+          see_also=''.join('%%        \\url{%s}\n\n' % see_also for see_also in dedupe_dict[issue]['See Also'].split()),
           solution=dedupe_dict[issue]['Solution'],
         )
       )
