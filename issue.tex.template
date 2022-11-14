@@ -48,10 +48,12 @@ $plugin_output
 $cve
     \end{itemize}
 
+\iffalse
 \noindent
-%\textbf{Recommendations}:
+\textbf{Recommendations}:
 
-%$solution
+$solution
+\fi
 
 %\noindent
 %\textbf{Further Reading}:

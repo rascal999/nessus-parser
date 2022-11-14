@@ -77,6 +77,8 @@ def main():
       # CVSS v2.0 Temporal Score,CVSS v3.0 Temporal Score,Risk Factor,BID,XREF,MSKB,Plugin Publication Date,Plugin Modification Date,Metasploit,Core Impact,CANVAS
       if len(dedupe_dict[issue]['CVE']) == 0:
         dedupe_dict[issue]['CVE'] = "N/A"
+      if len(dedupe_dict[issue]['Plugin Output']) == 0:
+        dedupe_dict[issue]['Plugin Output'] = "N/A"
       issue_file = open(parsed.output + "/" + issue + ".tex", "w")
       issue_file.write(
         temp_obj.substitute(
@@ -85,13 +87,13 @@ def main():
           risk=dedupe_dict[issue]['Risk'],
           name=dedupe_dict[issue]['Name'],
           plugin_output=dedupe_dict[issue]['Plugin Output'],
-          synopsis=dedupe_dict[issue]['Synopsis'],
-          description=dedupe_dict[issue]['Description'],
+          synopsis=dedupe_dict[issue]['Synopsis'].replace("_","\_"),
+          description=dedupe_dict[issue]['Description'].replace("_","\_"),
           # There must be a better way..
           cve="        \item \\href{{https://cve.mitre.org/cgi-bin/cvename.cgi?name={0}}}{{{0}}}\n".format("".join(cve for cve in dedupe_dict[issue]['CVE'].split())),
           host=''.join('        \item %s\n' % host for host in dedupe_dict[issue]['Hosts']),
           see_also=''.join('%%        \\url{%s}\n\n' % see_also for see_also in dedupe_dict[issue]['See Also'].split()),
-          solution=dedupe_dict[issue]['Solution'],
+          solution=dedupe_dict[issue]['Solution'].replace("_","\_"),
         )
       )
       issue_file.close()
