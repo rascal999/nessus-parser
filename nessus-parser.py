@@ -23,8 +23,15 @@ class Range(object):
     def __init__(self, start, end):
         self.start = start
         self.end = end
+
     def __eq__(self, other):
         return self.start <= other <= self.end
+
+    def __contains__(self, item):
+        return self.__eq__(item)
+
+    def __iter__(self):
+        yield self
 
 def welcome():
   print("Parse Nessus CSV to output issues based on template file.")
@@ -32,12 +39,14 @@ def welcome():
 
 def main():
     parser = argparse.ArgumentParser(description="Parse Nessus CSV to output issues based on template file.")
-    parser.add_argument("--csv", required=True,
-                        help="Nessus CSV file")
+    parser.add_argument("--csv", action="append", required=True,
+                        help="Nessus CSV file(s)")
     parser.add_argument("--template", required=True,
                         help="Template to build issues from")
-    parser.add_argument("--cvss", required=False, type=float, default=0, choices=[Range(0.0, 10.0)],
+    parser.add_argument("--min-cvss", required=False, type=float, default=0, choices=[Range(0.0, 10.0)],
                         help="Only include issues with this rating or above (default: 0)")
+    parser.add_argument("--max-cvss", required=False, type=float, default=10, choices=[Range(0.0, 10.0)],
+                        help="Only include issues with this rating or below (default: 10)")
     parser.add_argument("--output", required=False, default="nessus",
                         help="Output directory to create issues (default: nessus)")
 
@@ -46,16 +55,17 @@ def main():
     # Open template
     template_string = Path(parsed.template).read_text()
 
-    # Open CSV
-    csv_file = csv.DictReader(open(parsed.csv))
     dedupe_dict = {}
-    for row in csv_file:
-      if row['Plugin ID'] not in dedupe_dict:
-        dedupe_dict[row['Plugin ID']] = dict(row)
-        # Hosts list
-        dedupe_dict[row['Plugin ID']]['Hosts'] = []
-      if row['Host'] not in dedupe_dict[row['Plugin ID']]['Hosts']:
-        dedupe_dict[row['Plugin ID']]['Hosts'].append(row['Host'])
+    # Open CSV
+    for csv_file_arg in parsed.csv:
+      csv_file = csv.DictReader(open(csv_file_arg))
+      for row in csv_file:
+        if row['Plugin ID'] not in dedupe_dict:
+          dedupe_dict[row['Plugin ID']] = dict(row)
+          # Hosts list
+          dedupe_dict[row['Plugin ID']]['Hosts'] = []
+        if row['Host'] not in dedupe_dict[row['Plugin ID']]['Hosts']:
+          dedupe_dict[row['Plugin ID']]['Hosts'].append(row['Host'])
 
     # Check / create output directory
     if os.path.exists(parsed.output):
@@ -70,7 +80,7 @@ def main():
         risk_rating = 0
 
       # Don't include issue if CVSS score too low
-      if float(risk_rating) < parsed.cvss:
+      if float(risk_rating) > parsed.max_cvss or float(risk_rating) < parsed.min_cvss:
         continue
       temp_obj = Template(template_string)
       # Plugin ID,CVE,CVSS v2.0 Base Score,Risk,Host,Protocol,Port,Name,Synopsis,Description,Solution,See Also,Plugin Output,STIG Severity,CVSS v3.0 Base Score

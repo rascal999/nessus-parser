@@ -1,3 +1,4 @@
 *.csv
 *.swp
 nessus/*
+nessus*/*

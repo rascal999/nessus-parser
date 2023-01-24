@@ -52,12 +52,12 @@ $cve
 \noindent
 \textbf{Recommendations}:
 
-$solution
+solution
 \fi
 
-%\noindent
-%\textbf{Further Reading}:
+\noindent
+\textbf{Further Reading}:
 
-%$see_also
+$see_also
 
 \newpage
