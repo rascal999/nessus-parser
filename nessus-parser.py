@@ -95,7 +95,7 @@ def main():
           plugin_id=dedupe_dict[issue]['Plugin ID'],
           cvss3=dedupe_dict[issue]['CVSS v3.0 Base Score'],
           risk=dedupe_dict[issue]['Risk'],
-          name=dedupe_dict[issue]['Name'],
+          name=dedupe_dict[issue]['Name'].replace('_','\_'),
           plugin_output=dedupe_dict[issue]['Plugin Output'],
           synopsis=dedupe_dict[issue]['Synopsis'].replace("_","\_"),
           description=dedupe_dict[issue]['Description'].replace("_","\_"),
